@@ -1,13 +1,26 @@
-/**
- * @format
- */
-
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import App from '../App';
 
-test('renders correctly', async () => {
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+
+jest.mock('../src/navigation/AppNavigator', () => {
+  const { View, Text } = require('react-native');
+  return {
+    AppNavigator: () => (
+      <View testID="app-navigator">
+        <Text>InStock Navigator</Text>
+      </View>
+    ),
+  };
+});
+
+test('renders InStock App and Providers correctly', async () => {
+  let tree: any;
   await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(<App />);
+    tree = ReactTestRenderer.create(<App />);
   });
+  expect(tree.toJSON()).toBeTruthy();
 });
